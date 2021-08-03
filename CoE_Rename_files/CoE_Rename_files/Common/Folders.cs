@@ -11,13 +11,6 @@ namespace CoE_Rename_files.Common
     public static class Folders
     {
 
-        public static string  SelectFolder()
-        {
-            FolderBrowserDialog folder = new FolderBrowserDialog();
-            folder.ShowDialog();
-            var folderpath = folder.SelectedPath;
-            return folderpath;
-        }
         public static List<string>  GetSubFolders(string folderpath)
         {
             string rootFolder =  folderpath;
@@ -71,65 +64,42 @@ namespace CoE_Rename_files.Common
             return owner;
         }
 
-        public static void GetPdfFiles(List<string> paths)
+        static List<string> directories = new List<string>();
+
+        public static List<string> LoadSubDirs(string dir)
         {
-            int count = 1;
-            List<string> files = new List<string>();
-            //foreach (var path in paths)
-            //{
-                //var pathName = path.Substring(3).Replace("\\", "_");
-                List<string> fileNames = Directory.GetFiles(@"C:\\programmin\\Coe Folders\\", "*.pdf").Select(Path.GetFileName).ToList();
-                
-                foreach (var fileName in fileNames)
-                {
-                    int i = fileNames.IndexOf(fileName);
-                     RenameFiles(@"C:\\programmin\\Coe Folders" + "\\"+fileName, @"C:\\programmin\\Coe Folders" + "\\"+ count.ToString()+".pdf");
-                    count++;
-                    Console.WriteLine(count);
-                }
-            //}
+            directories.Add(dir);
+            string[] subdirectoryEntries = Directory.GetDirectories(dir);
+
+            foreach (string subdirectory in subdirectoryEntries)
+            {
+                LoadSubDirs(subdirectory);
+            }
+            return directories;
         }
 
-        public static void RenameFiles(string oldName ,string newname)
+        public static void GetSubDirectories(string root)
         {
-            try
-            {
-                System.IO.File.Move(oldName, newname);
-            }
-            catch (Exception ex)
-            {
+            string[] subdirectoryEntries = Directory.GetDirectories(root);
 
-                MessageBox.Show(ex.Message);
+            foreach (string subdirectory in subdirectoryEntries)
+            {
+                LoadSubDirs(subdirectory);
             }
         }
-
-
-        public static void MovePdfFiles(List<string> paths)
+        public static void GetPdfFiles(List<string> paths, string MoveTo)
         {
-            //List<string> test = new List<string>()
             int count = 1;
             List<string> files = new List<string>();
             foreach (var path in paths)
             {
-                var pathName = path.Substring(3).Replace("\\", "_");
                 List<string> fileNames = Directory.GetFiles(path, "*.pdf").Select(Path.GetFileName).ToList();
-             //   fileNames.Add(Directory.GetFiles(path, "*.pdf").Select(Path.GetFileName).ToList());
-                Console.WriteLine(fileNames.Count);
-
-                Parallel.ForEach(fileNames, fileName =>
+                foreach (var fileName in fileNames)
                 {
-
-                    ///int i = fileNames.IndexOf(fileName);
-                    // RenameFiles(path + "\\" + fileName, @"E:\\Final Verified\\" + fileName);
-                    //count++;
-                });
-/*                foreach (var fileName in fileNames)
-                {
-                    
                     int i = fileNames.IndexOf(fileName);
-                    RenameFiles(path + "\\" + fileName, @"E:\\Final Verified\\" + fileName);
+                    System.IO.File.Copy(path + "\\" + fileName, MoveTo + "\\" + count.ToString() + ".pdf");
                     count++;
-                }*/
+                }
             }
         }
     }

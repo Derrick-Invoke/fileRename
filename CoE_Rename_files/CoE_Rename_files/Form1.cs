@@ -13,6 +13,8 @@ namespace CoE_Rename_files
 {
     public partial class Form1 : Form
     {
+        public string MoveTo { get; set; }
+        public string Source { get; set; }
         public Form1()
         {
             InitializeComponent();
@@ -29,14 +31,14 @@ namespace CoE_Rename_files
             FolderBrowserDialog folder = new FolderBrowserDialog();
             folder.ShowDialog();
             var folderpath = folder.SelectedPath;
-            label1.Text = folderpath.ToString();
+            Source = folderpath.ToString();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (label1.Text != "")
+            if (!String.IsNullOrEmpty(Source) && !String.IsNullOrEmpty(MoveTo))
             {
-                Folders.GetPdfFiles(Folders.GetSubFolders(label1.Text));
+                Folders.GetPdfFiles(Folders.LoadSubDirs(Source), MoveTo);
                 MessageBox.Show("Successfully renamed all files");
 
             }
@@ -46,18 +48,12 @@ namespace CoE_Rename_files
             }
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void btnMoveTo_Click(object sender, EventArgs e)
         {
-            if (label1.Text != "")
-            {
-                Folders.MovePdfFiles(Folders.GetSubFolders(label1.Text));
-                MessageBox.Show("Files successfully moved.");
-
-            }
-            else
-            {
-                MessageBox.Show("Please select a folde before rename files");
-            }
+            FolderBrowserDialog folder = new FolderBrowserDialog();
+            folder.ShowDialog();
+            var folderpath = folder.SelectedPath;
+            MoveTo = folderpath.ToString();
         }
     }
 }
